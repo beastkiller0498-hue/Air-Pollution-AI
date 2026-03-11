@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI Air Pollution Dashboard</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+}
+
+.container{
+display:flex;
+justify-content:center;
+gap:40px;
+margin:40px;
+}
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:10px;
+width:320px;
+box-shadow:0px 0px 15px rgba(0,0,0,0.5);
+}
+
+h1{
+margin-top:20px;
+}
+
+canvas{
+background:white;
+border-radius:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🌍 AI Air Pollution Intelligence Dashboard</h1>
+
+<div class="container">
+
+<div class="card">
+
+<h2>City</h2>
+<h3>{{city}}</h3>
+
+<h2>Live AQI</h2>
+<h3>{{aqi}}</h3>
+
+<h2>AI Predicted AQI</h2>
+<h1>{{prediction}}</h1>
+
+<h2>Status</h2>
+<h3>{{status}}</h3>
+
+</div>
+
+<div class="card">
+
+<h2>AQI Forecast Chart</h2>
+
+<canvas id="aqiChart"></canvas>
+
+</div>
+
+</div>
+
+<h2>Live Pollution Map</h2>
+
+<div id="map" style="height:400px;margin:20px;"></div>
+
+
+<script>
+
+var map = L.map('map').setView([17.385,78.4867],10);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ attribution:'© OpenStreetMap'
+}).addTo(map);
+
+L.marker([17.385,78.4867]).addTo(map)
+.bindPopup("Pollution Monitoring Station")
+.openPopup();
+
+</script>
+
+
+<script>
+
+const ctx = document.getElementById('aqiChart');
+
+new Chart(ctx, {
+
+type: 'line',
+
+data: {
+
+labels: ['Now','+1h','+2h','+3h','+4h','+5h'],
+
+datasets: [{
+
+label: 'AQI Forecast',
+
+data: [{{prediction}},70,85,90,100,110],
+
+borderWidth: 3
+
+}]
+
+},
+
+options:{
+
+scales:{
+
+y:{beginAtZero:true}
+
+}
+
+}
+
+});
+
+</script>
+
+</body>
+
+</html>
