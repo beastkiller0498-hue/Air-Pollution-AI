@@ -1,45 +1,77 @@
 from flask import Flask, render_template, request
 import requests
-import random
+import os
 
 app = Flask(__name__)
 
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
-@app.route("/")
+
+@app.route("/", methods=["GET","POST"])
 def home():
-    city = "Hyderabad"
-    lat = 17.3850
-    lon = 78.4867
 
-    url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+    city = None
+    aqi = None
+    status = None
+    recommendation = None
+    future_aqi = []
 
-    try:
-        response = requests.get(url)
-        data = response.json()
-        aqi = data["list"][0]["main"]["aqi"]
-    except:
-        aqi = random.randint(40,120)
+    if request.method == "POST":
 
-    prediction = random.randint(40,150)
+        city = request.form["city"]
 
-    if prediction < 50:
-        status = "Good"
-    elif prediction < 100:
-        status = "Moderate"
-    else:
-        status = "Unhealthy"
+        # get city coordinates
+        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
+        geo_data = requests.get(geo_url).json()
+
+        if geo_data:
+
+            lat = geo_data[0]["lat"]
+            lon = geo_data[0]["lon"]
+
+            # current air pollution
+            air_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+            air_data = requests.get(air_url).json()
+
+            aqi = air_data["list"][0]["main"]["aqi"]
+
+            # forecast air pollution
+            forecast_url = f"http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
+            forecast_data = requests.get(forecast_url).json()
+
+            for item in forecast_data["list"][:5]:
+                future_aqi.append(item["main"]["aqi"])
+
+            if aqi == 1:
+                status = "Good"
+                recommendation = "Air quality is good. Enjoy outdoor activities."
+
+            elif aqi == 2:
+                status = "Fair"
+                recommendation = "Air is acceptable. Sensitive people should reduce outdoor activity."
+
+            elif aqi == 3:
+                status = "Moderate"
+                recommendation = "Limit prolonged outdoor activities."
+
+            elif aqi == 4:
+                status = "Poor"
+                recommendation = "Wear mask and avoid outdoor exercise."
+
+            else:
+                status = "Very Poor"
+                recommendation = "Stay indoors and use air purifiers."
 
     return render_template(
         "index.html",
         city=city,
-        prediction=prediction,
+        aqi=aqi,
         status=status,
-        aqi=aqi
+        recommendation=recommendation,
+        future_aqi=future_aqi
     )
 
-import os
+
 if __name__ == "__main__":
 
-    port= int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
+    port = int(os.environ.get("PORT",10000))
+    app.run(host="0.0.0.0",port=port)
