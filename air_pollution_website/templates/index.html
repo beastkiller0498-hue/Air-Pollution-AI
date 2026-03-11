@@ -32,11 +32,13 @@ border-radius:10px;
 
 <body>
 
-<h1>🌍 AI Air Pollution Monitoring System</h1>
+<h1>🌍 AI Air Pollution Dashboard</h1>
 
 <form method="POST">
+
 <input type="text" name="city" placeholder="Enter city or village">
 <button type="submit">Search</button>
+
 </form>
 
 {% if city %}
@@ -48,18 +50,20 @@ border-radius:10px;
 <p>AQI: {{aqi}}</p>
 
 <p>PM2.5: {{pm25}}</p>
-
 <p>PM10: {{pm10}}</p>
+<p>NO2: {{no2}}</p>
+<p>SO2: {{so2}}</p>
+<p>O3: {{o3}}</p>
 
-<p>AI Future Prediction: {{future_ai}}</p>
+<p>AI Prediction: {{ai_prediction}}</p>
 
-<p>Recommendation: {{advice}}</p>
+<p>Health Advice: {{advice}}</p>
 
 </div>
 
 <div class="card">
 
-<h2>AQI Forecast</h2>
+<h2>12 Hour AQI Forecast</h2>
 
 <canvas id="aqiChart"></canvas>
 
@@ -70,9 +74,9 @@ var ctx=document.getElementById('aqiChart');
 new Chart(ctx,{
 type:'line',
 data:{
-labels:["1h","2h","3h","4h","5h","6h"],
+labels:["1","2","3","4","5","6","7","8","9","10","11","12"],
 datasets:[{
-label:'AQI Forecast',
+label:"AQI Forecast",
 data:{{forecast}},
 borderWidth:3
 }]
@@ -102,5 +106,4 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 {% endif %}
 
 </body>
-
 </html>
