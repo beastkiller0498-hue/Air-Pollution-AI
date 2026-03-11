@@ -3,7 +3,12 @@
 
 <head>
 
-<title>AI Air Pollution Predictor</title>
+<title>AI Air Pollution Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 
@@ -12,32 +17,13 @@ font-family:Arial;
 background:#0f172a;
 color:white;
 text-align:center;
-padding-top:40px;
 }
 
-.box{
+.card{
 background:#1e293b;
-padding:30px;
+padding:20px;
+margin:20px;
 border-radius:10px;
-width:400px;
-margin:auto;
-}
-
-input{
-width:80%;
-padding:10px;
-margin:10px;
-}
-
-button{
-padding:10px 20px;
-background:#38bdf8;
-border:none;
-cursor:pointer;
-}
-
-.result{
-margin-top:20px;
 }
 
 </style>
@@ -46,47 +32,74 @@ margin-top:20px;
 
 <body>
 
-<h1>🌍 AI Air Pollution Forecast System</h1>
-
-<div class="box">
+<h1>🌍 AI Air Pollution Monitoring System</h1>
 
 <form method="POST">
-
-<input type="text" name="city" placeholder="Enter City or Village" required>
-
-<br>
-
-<button type="submit">Check Air Quality</button>
-
+<input type="text" name="city" placeholder="Enter city or village">
+<button type="submit">Search</button>
 </form>
 
 {% if city %}
 
-<div class="result">
+<div class="card">
 
-<h2>City: {{city}}</h2>
+<h2>{{city}}</h2>
 
-<h3>Current AQI: {{aqi}}</h3>
+<p>AQI: {{aqi}}</p>
 
-<h3>Status: {{status}}</h3>
+<p>PM2.5: {{pm25}}</p>
 
-<p>{{recommendation}}</p>
+<p>PM10: {{pm10}}</p>
 
-<h3>Future AQI Forecast</h3>
+<p>AI Future Prediction: {{future_ai}}</p>
 
-<ul>
-<li>Next Hour: {{future_aqi[0]}}</li>
-<li>2 Hours: {{future_aqi[1]}}</li>
-<li>3 Hours: {{future_aqi[2]}}</li>
-<li>4 Hours: {{future_aqi[3]}}</li>
-<li>5 Hours: {{future_aqi[4]}}</li>
-</ul>
+<p>Recommendation: {{advice}}</p>
+
+</div>
+
+<div class="card">
+
+<h2>AQI Forecast</h2>
+
+<canvas id="aqiChart"></canvas>
+
+<script>
+
+var ctx=document.getElementById('aqiChart');
+
+new Chart(ctx,{
+type:'line',
+data:{
+labels:["1h","2h","3h","4h","5h","6h"],
+datasets:[{
+label:'AQI Forecast',
+data:{{forecast}},
+borderWidth:3
+}]
+}
+});
+
+</script>
+
+</div>
+
+<div class="card">
+
+<h2>Pollution Map</h2>
+
+<div id="map" style="height:400px"></div>
+
+<script>
+
+var map=L.map('map').setView([20.5937,78.9629],5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+</script>
 
 </div>
 
 {% endif %}
-
-</div>
 
 </body>
 
