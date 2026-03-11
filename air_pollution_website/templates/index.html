@@ -3,12 +3,7 @@
 
 <head>
 
-<title>AI Air Pollution Dashboard</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<title>AI Air Pollution Predictor</title>
 
 <style>
 
@@ -17,30 +12,32 @@ font-family:Arial;
 background:#0f172a;
 color:white;
 text-align:center;
+padding-top:40px;
 }
 
-.container{
-display:flex;
-justify-content:center;
-gap:40px;
-margin:40px;
-}
-
-.card{
+.box{
 background:#1e293b;
 padding:30px;
 border-radius:10px;
-width:320px;
-box-shadow:0px 0px 15px rgba(0,0,0,0.5);
+width:400px;
+margin:auto;
 }
 
-h1{
+input{
+width:80%;
+padding:10px;
+margin:10px;
+}
+
+button{
+padding:10px 20px;
+background:#38bdf8;
+border:none;
+cursor:pointer;
+}
+
+.result{
 margin-top:20px;
-}
-
-canvas{
-background:white;
-border-radius:5px;
 }
 
 </style>
@@ -49,93 +46,47 @@ border-radius:5px;
 
 <body>
 
-<h1>🌍 AI Air Pollution Intelligence Dashboard</h1>
+<h1>🌍 AI Air Pollution Forecast System</h1>
 
-<div class="container">
+<div class="box">
 
-<div class="card">
+<form method="POST">
 
-<h2>City</h2>
-<h3>{{city}}</h3>
+<input type="text" name="city" placeholder="Enter City or Village" required>
 
-<h2>Live AQI</h2>
-<h3>{{aqi}}</h3>
+<br>
 
-<h2>AI Predicted AQI</h2>
-<h1>{{prediction}}</h1>
+<button type="submit">Check Air Quality</button>
 
-<h2>Status</h2>
-<h3>{{status}}</h3>
+</form>
+
+{% if city %}
+
+<div class="result">
+
+<h2>City: {{city}}</h2>
+
+<h3>Current AQI: {{aqi}}</h3>
+
+<h3>Status: {{status}}</h3>
+
+<p>{{recommendation}}</p>
+
+<h3>Future AQI Forecast</h3>
+
+<ul>
+<li>Next Hour: {{future_aqi[0]}}</li>
+<li>2 Hours: {{future_aqi[1]}}</li>
+<li>3 Hours: {{future_aqi[2]}}</li>
+<li>4 Hours: {{future_aqi[3]}}</li>
+<li>5 Hours: {{future_aqi[4]}}</li>
+</ul>
 
 </div>
 
-<div class="card">
-
-<h2>AQI Forecast Chart</h2>
-
-<canvas id="aqiChart"></canvas>
+{% endif %}
 
 </div>
-
-</div>
-
-<h2>Live Pollution Map</h2>
-
-<div id="map" style="height:400px;margin:20px;"></div>
-
-
-<script>
-
-var map = L.map('map').setView([17.385,78.4867],10);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
- attribution:'© OpenStreetMap'
-}).addTo(map);
-
-L.marker([17.385,78.4867]).addTo(map)
-.bindPopup("Pollution Monitoring Station")
-.openPopup();
-
-</script>
-
-
-<script>
-
-const ctx = document.getElementById('aqiChart');
-
-new Chart(ctx, {
-
-type: 'line',
-
-data: {
-
-labels: ['Now','+1h','+2h','+3h','+4h','+5h'],
-
-datasets: [{
-
-label: 'AQI Forecast',
-
-data: [{{prediction}},70,85,90,100,110],
-
-borderWidth: 3
-
-}]
-
-},
-
-options:{
-
-scales:{
-
-y:{beginAtZero:true}
-
-}
-
-}
-
-});
-
-</script>
 
 </body>
 
