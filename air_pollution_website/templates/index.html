@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -23,8 +24,10 @@
 <h1>🌍 AI Air Pollution Dashboard</h1>
 
 <form method="POST" class="searchBox">
+
 <input name="city" placeholder="Enter city or village">
 <button>Search</button>
+
 </form>
 
 
@@ -36,7 +39,7 @@
 
 <div class="aqiCard">
 <h3>AQI</h3>
-<h1>{{prediction}}</h1>
+<h1>{{aqi}}</h1>
 </div>
 
 <div class="healthCard">
@@ -139,6 +142,10 @@ const pm10={{pm10}}
 const no2={{no2}}
 const so2={{so2}}
 const o3={{o3}}
+
+const city="{{city}}"
+const aqi="{{aqi}}"
+const status="{{status}}"
 
 </script>
 
