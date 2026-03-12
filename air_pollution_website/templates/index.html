@@ -1,161 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Air Pollution Dashboard</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<style>
-
-body{
-background:#0b1220;
-color:white;
-font-family:Arial;
-margin:0;
-padding:20px;
-}
-
-h1{
-text-align:center;
-}
-
-.search-box{
-display:flex;
-justify-content:center;
-margin:20px;
-}
-
-input{
-padding:12px;
-width:250px;
-border-radius:10px;
-border:none;
-}
-
-button{
-padding:12px 20px;
-border:none;
-background:#3b82f6;
-color:white;
-border-radius:10px;
-margin-left:10px;
-}
-
-.dashboard{
-max-width:1200px;
-margin:auto;
-}
-
-.card{
-background:#162033;
-padding:20px;
-border-radius:15px;
-margin:15px 0;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-}
-
-.pollutant{
-background:#1e293b;
-padding:15px;
-border-radius:10px;
-text-align:center;
-}
-
-.aqi-circle{
-width:150px;
-height:150px;
-border-radius:50%;
-background:conic-gradient(red,orange,yellow,green);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:30px;
-margin:auto;
-}
-
-#map{
-height:300px;
-margin-top:20px;
-}
-
-</style>
 </head>
 
 <body>
 
+<div class="container">
+
 <h1>🌍 AI Air Pollution Dashboard</h1>
 
-<form method="POST" class="search-box">
+<form method="POST" class="searchBox">
+
 <input name="city" placeholder="Enter city or village">
 <button>Search</button>
+
 </form>
 
-{% if city %}
+<!-- Top AQI Section -->
 
-<div class="dashboard">
+<div class="topSection">
 
-<div class="card">
+<div class="cityCard">
 
 <h2>{{city}}</h2>
-
-<div class="aqi-circle">
-{{prediction}}
-</div>
-
-<p>Health Advice: {{advice}}</p>
-<p>Safe Outdoor Time: {{outdoor}}</p>
+<p>{{country}}</p>
 
 </div>
 
-<div class="grid">
+<div class="aqiCard">
 
-<div class="pollutant">PM2.5<br>{{pm25}}</div>
-<div class="pollutant">PM10<br>{{pm10}}</div>
-<div class="pollutant">NO2<br>{{no2}}</div>
-<div class="pollutant">SO2<br>{{so2}}</div>
-<div class="pollutant">O3<br>{{o3}}</div>
+<h3>AQI</h3>
+<h1>{{aqi}}</h1>
+<p>{{status}}</p>
 
 </div>
 
-<div class="card">
+<div class="healthCard">
+
+<h3>Health Advice</h3>
+<p>{{advice}}</p>
+
+</div>
+
+</div>
+
+<!-- Pollution Cards -->
+
+<div class="pollutionCards">
+
+<div class="pollCard red">
+<h3>PM2.5</h3>
+<p>{{pm25}}</p>
+</div>
+
+<div class="pollCard orange">
+<h3>PM10</h3>
+<p>{{pm10}}</p>
+</div>
+
+<div class="pollCard blue">
+<h3>NO2</h3>
+<p>{{no2}}</p>
+</div>
+
+<div class="pollCard green">
+<h3>SO2</h3>
+<p>{{so2}}</p>
+</div>
+
+<div class="pollCard purple">
+<h3>O3</h3>
+<p>{{o3}}</p>
+</div>
+
+</div>
+
+<!-- Graph -->
+
+<div class="graphCard">
 
 <h2>Pollution Graph</h2>
 
-<canvas id="chart"></canvas>
+<canvas id="pollutionChart"></canvas>
 
 </div>
 
-<script>
+<!-- Forecast -->
 
-new Chart(document.getElementById("chart"),{
+<div class="forecastCard">
 
-type:"bar",
+<h2>12 Hour AQI Forecast</h2>
 
-data:{
-labels:["PM2.5","PM10","NO2","SO2","O3"],
+<div class="forecastRow">
 
-datasets:[{
+{% for i in forecast %}
+<div class="forecastBox">{{i}}</div>
+{% endfor %}
 
-data:[{{pm25}},{{pm10}},{{no2}},{{so2}},{{o3}}],
+</div>
 
-backgroundColor:["#ef4444","#f97316","#3b82f6","#22c55e","#6366f1"]
+</div>
 
-}]
+<!-- Bottom Section -->
 
-}
+<div class="bottomSection">
 
-})
-
-</script>
-
-<div class="card">
+<div class="mapCard">
 
 <h2>Pollution Map</h2>
 
@@ -163,30 +126,36 @@ backgroundColor:["#ef4444","#f97316","#3b82f6","#22c55e","#6366f1"]
 
 </div>
 
-<script>
-
-var map=L.map('map').setView([20,78],4)
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
-
-</script>
-
-<div class="card">
+<div class="tipsCard">
 
 <h2>Quick Tips</h2>
 
 <ul>
-<li>Plant more trees 🌱</li>
-<li>Use public transport 🚌</li>
-<li>Avoid burning waste ❌</li>
-<li>Wear mask 😷</li>
+
+<li>🌱 Plant more trees</li>
+<li>🚌 Use public transport</li>
+<li>🔥 Avoid burning waste</li>
+<li>😷 Wear mask outdoors</li>
+
 </ul>
 
 </div>
 
 </div>
 
-{% endif %}
+</div>
+
+<script>
+
+const pm25={{pm25}}
+const pm10={{pm10}}
+const no2={{no2}}
+const so2={{so2}}
+const o3={{o3}}
+
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 </html>
