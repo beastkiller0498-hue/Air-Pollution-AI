@@ -1,7 +1,7 @@
 body{
 background:#0f172a;
 color:white;
-font-family:Arial, sans-serif;
+font-family:Arial;
 margin:0;
 }
 
@@ -10,16 +10,19 @@ width:92%;
 margin:auto;
 }
 
+/* TITLE */
+
 h1{
 text-align:center;
-margin:15px;
-font-size:28px;
+margin:20px;
 }
+
+/* SEARCH */
 
 .searchBox{
 display:flex;
 justify-content:center;
-gap:8px;
+gap:10px;
 margin-bottom:20px;
 }
 
@@ -27,7 +30,7 @@ margin-bottom:20px;
 padding:10px;
 border-radius:10px;
 border:none;
-width:200px;
+width:220px;
 }
 
 .searchBox button{
@@ -38,33 +41,40 @@ color:white;
 border-radius:10px;
 }
 
+/* TOP SECTION */
+
 .topSection{
 display:flex;
-gap:12px;
+gap:15px;
 margin-bottom:20px;
-flex-wrap:wrap;
 }
 
-.cityCard,
-.healthCard{
+.cityCard{
 background:#1e293b;
-padding:15px;
+padding:20px;
 border-radius:15px;
 flex:1;
 }
 
 .aqiCard{
 background:linear-gradient(90deg,#f97316,#ef4444);
-padding:20px;
-border-radius:50%;
+padding:25px;
+border-radius:100px;
 text-align:center;
-min-width:120px;
-height:120px;
+width:110px;
 display:flex;
 flex-direction:column;
 justify-content:center;
-align-items:center;
 }
+
+.healthCard{
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+flex:1;
+}
+
+/* POLLUTION CARDS */
 
 .pollutionCards{
 display:grid;
@@ -75,27 +85,44 @@ margin-bottom:20px;
 
 .pollCard{
 background:#1e293b;
-padding:15px;
+padding:12px;
 border-radius:12px;
 text-align:center;
+font-size:14px;
 }
 
-.red{border-bottom:3px solid red;}
-.orange{border-bottom:3px solid orange;}
-.blue{border-bottom:3px solid #3b82f6;}
-.green{border-bottom:3px solid #22c55e;}
-.purple{border-bottom:3px solid #6366f1;}
+.pollCard h3{
+margin:0;
+font-size:16px;
+}
+
+.pollCard p{
+margin-top:6px;
+font-size:15px;
+}
+
+/* COLORS */
+
+.red{border-bottom:4px solid red;}
+.orange{border-bottom:4px solid orange;}
+.blue{border-bottom:4px solid #3b82f6;}
+.green{border-bottom:4px solid #22c55e;}
+.purple{border-bottom:4px solid #6366f1;}
+
+/* GRAPH */
 
 .graphCard{
 background:#1e293b;
-padding:15px;
+padding:18px;
 border-radius:15px;
 margin-bottom:20px;
 }
 
+/* FORECAST */
+
 .forecastCard{
 background:#1e293b;
-padding:15px;
+padding:18px;
 border-radius:15px;
 margin-bottom:20px;
 }
@@ -103,39 +130,43 @@ margin-bottom:20px;
 .forecastRow{
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:8px;
-margin-top:10px;
+gap:10px;
 }
 
 .forecastBox{
 background:#334155;
-padding:8px;
+padding:12px;
 border-radius:8px;
 text-align:center;
-font-size:14px;
 }
+
+/* BOTTOM SECTION */
 
 .bottomSection{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:12px;
+gap:15px;
 }
+
+/* MAP */
 
 .mapCard{
 background:#1e293b;
-padding:15px;
+padding:18px;
 border-radius:15px;
 }
 
 #map{
-height:220px;
 width:100%;
-border-radius:10px;
+height:300px;
+border-radius:12px;
 }
+
+/* QUICK TIPS */
 
 .tipsCard{
 background:#1e293b;
-padding:15px;
+padding:18px;
 border-radius:15px;
 }
 
@@ -144,7 +175,24 @@ padding-left:18px;
 }
 
 .tipsCard li{
-margin-bottom:8px;
-font-size:14px;
+margin-bottom:10px;
 line-height:1.4;
+}
+
+/* MAP LEGEND */
+
+.legend{
+background:#1e293b;
+padding:10px;
+border-radius:10px;
+color:white;
+font-size:12px;
+}
+
+.legend i{
+width:14px;
+height:14px;
+float:left;
+margin-right:6px;
+opacity:0.8;
 }
