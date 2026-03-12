@@ -1,24 +1,25 @@
 body{
 background:#0f172a;
 color:white;
-font-family:Arial;
+font-family:Arial, sans-serif;
 margin:0;
 }
 
 .container{
-width:90%;
+width:92%;
 margin:auto;
 }
 
 h1{
 text-align:center;
-margin:20px;
+margin:15px;
+font-size:28px;
 }
 
 .searchBox{
 display:flex;
 justify-content:center;
-gap:10px;
+gap:8px;
 margin-bottom:20px;
 }
 
@@ -26,20 +27,20 @@ margin-bottom:20px;
 padding:10px;
 border-radius:10px;
 border:none;
-width:260px;
+width:200px;
 }
 
 .searchBox button{
 background:#3b82f6;
 border:none;
-padding:10px 20px;
+padding:10px 18px;
 color:white;
 border-radius:10px;
 }
 
 .topSection{
 display:flex;
-gap:20px;
+gap:12px;
 margin-bottom:20px;
 flex-wrap:wrap;
 }
@@ -47,7 +48,7 @@ flex-wrap:wrap;
 .cityCard,
 .healthCard{
 background:#1e293b;
-padding:20px;
+padding:15px;
 border-radius:15px;
 flex:1;
 }
@@ -55,88 +56,95 @@ flex:1;
 .aqiCard{
 background:linear-gradient(90deg,#f97316,#ef4444);
 padding:20px;
-border-radius:100px;
+border-radius:50%;
 text-align:center;
 min-width:120px;
+height:120px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
 }
 
 .pollutionCards{
-display:flex;
-gap:10px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
 margin-bottom:20px;
-flex-wrap:wrap;
 }
 
 .pollCard{
 background:#1e293b;
 padding:15px;
 border-radius:12px;
-flex:1;
 text-align:center;
-min-width:120px;
 }
 
-.red{border-bottom:4px solid red;}
-.orange{border-bottom:4px solid orange;}
-.blue{border-bottom:4px solid #3b82f6;}
-.green{border-bottom:4px solid #22c55e;}
-.purple{border-bottom:4px solid #6366f1;}
+.red{border-bottom:3px solid red;}
+.orange{border-bottom:3px solid orange;}
+.blue{border-bottom:3px solid #3b82f6;}
+.green{border-bottom:3px solid #22c55e;}
+.purple{border-bottom:3px solid #6366f1;}
 
 .graphCard{
 background:#1e293b;
-padding:20px;
+padding:15px;
 border-radius:15px;
 margin-bottom:20px;
 }
 
 .forecastCard{
 background:#1e293b;
-padding:20px;
+padding:15px;
 border-radius:15px;
 margin-bottom:20px;
 }
 
 .forecastRow{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-justify-content:center;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+margin-top:10px;
 }
 
 .forecastBox{
 background:#334155;
-padding:10px 14px;
+padding:8px;
 border-radius:8px;
-min-width:70px;
 text-align:center;
+font-size:14px;
 }
 
 .bottomSection{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 }
 
 .mapCard{
 background:#1e293b;
-padding:20px;
+padding:15px;
 border-radius:15px;
-flex:2;
 }
 
 #map{
-height:350px;
+height:220px;
 width:100%;
 border-radius:10px;
 }
 
 .tipsCard{
 background:#1e293b;
-padding:20px;
+padding:15px;
 border-radius:15px;
-flex:1;
+}
+
+.tipsCard ul{
+padding-left:18px;
 }
 
 .tipsCard li{
-margin-bottom:10px;
+margin-bottom:8px;
+font-size:14px;
+line-height:1.4;
 }
