@@ -84,7 +84,7 @@ def home():
         no2=no2,
         so2=so2,
         o3=o3,
-        prediction=prediction,
+        aqi=prediction,
         forecast=forecast,
         advice=advice,
         outdoor=outdoor,
@@ -96,4 +96,5 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
