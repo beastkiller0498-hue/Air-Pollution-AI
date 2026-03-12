@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -23,41 +24,33 @@
 <h1>🌍 AI Air Pollution Dashboard</h1>
 
 <form method="POST" class="searchBox">
-
 <input name="city" placeholder="Enter city or village">
 <button>Search</button>
-
 </form>
 
-<!-- Top AQI Section -->
+
+<!-- TOP SECTION -->
 
 <div class="topSection">
 
 <div class="cityCard">
-
 <h2>{{city}}</h2>
-<p>{{country}}</p>
-
 </div>
 
 <div class="aqiCard">
-
 <h3>AQI</h3>
-<h1>{{aqi}}</h1>
-<p>{{status}}</p>
-
+<h1>{{prediction}}</h1>
 </div>
 
 <div class="healthCard">
-
 <h3>Health Advice</h3>
 <p>{{advice}}</p>
-
 </div>
 
 </div>
 
-<!-- Pollution Cards -->
+
+<!-- POLLUTION CARDS -->
 
 <div class="pollutionCards">
 
@@ -88,7 +81,8 @@
 
 </div>
 
-<!-- Graph -->
+
+<!-- GRAPH -->
 
 <div class="graphCard">
 
@@ -98,7 +92,8 @@
 
 </div>
 
-<!-- Forecast -->
+
+<!-- FORECAST -->
 
 <div class="forecastCard">
 
@@ -114,7 +109,8 @@
 
 </div>
 
-<!-- Bottom Section -->
+
+<!-- BOTTOM SECTION -->
 
 <div class="bottomSection">
 
@@ -125,6 +121,7 @@
 <div id="map"></div>
 
 </div>
+
 
 <div class="tipsCard">
 
@@ -143,7 +140,9 @@
 
 </div>
 
+
 </div>
+
 
 <script>
 
