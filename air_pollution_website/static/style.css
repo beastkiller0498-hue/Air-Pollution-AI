@@ -142,13 +142,14 @@ border-radius:15px;
 #map{
 width:100%;
 height:300px;
-border-radius:12px;
+border-radius:14px;
 }
 
 .tipsCard{
 background:#1e293b;
 padding:18px;
 border-radius:15px;
+margin-top:10px;
 }
 
 .tipsCard ul{
@@ -158,4 +159,5 @@ padding-left:18px;
 .tipsCard li{
 margin-bottom:10px;
 }
+
 
