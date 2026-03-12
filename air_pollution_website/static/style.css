@@ -1,107 +1,79 @@
 body{
-
 background:#0f172a;
 color:white;
 font-family:Arial;
 margin:0;
-
 }
 
 .container{
-
 width:90%;
 margin:auto;
-
 }
 
 h1{
-
 text-align:center;
 margin:20px;
-
 }
 
 .searchBox{
-
 display:flex;
 justify-content:center;
 gap:10px;
 margin-bottom:20px;
-
 }
 
 .searchBox input{
-
 padding:10px;
 border-radius:10px;
 border:none;
 width:260px;
-
 }
 
 .searchBox button{
-
 background:#3b82f6;
 border:none;
 padding:10px 20px;
 color:white;
 border-radius:10px;
-
 }
 
-
-/* TOP SECTION */
-
 .topSection{
-
 display:flex;
 gap:20px;
 margin-bottom:20px;
 flex-wrap:wrap;
-
 }
 
 .cityCard,
 .healthCard{
-
 background:#1e293b;
 padding:20px;
 border-radius:15px;
 flex:1;
-
 }
 
 .aqiCard{
-
 background:linear-gradient(90deg,#f97316,#ef4444);
 padding:20px;
 border-radius:100px;
 text-align:center;
 min-width:120px;
-
 }
 
-
-/* POLLUTION CARDS */
-
 .pollutionCards{
-
 display:flex;
 gap:10px;
 margin-bottom:20px;
 flex-wrap:wrap;
-
 }
 
 .pollCard{
-
 background:#1e293b;
 padding:15px;
 border-radius:12px;
 flex:1;
 text-align:center;
 min-width:120px;
-
 }
 
 .red{border-bottom:4px solid red;}
@@ -110,85 +82,61 @@ min-width:120px;
 .green{border-bottom:4px solid #22c55e;}
 .purple{border-bottom:4px solid #6366f1;}
 
-
-/* GRAPH */
-
 .graphCard{
-
 background:#1e293b;
 padding:20px;
 border-radius:15px;
 margin-bottom:20px;
-
 }
 
-
-/* FORECAST */
-
 .forecastCard{
-
 background:#1e293b;
 padding:20px;
 border-radius:15px;
 margin-bottom:20px;
-
 }
 
 .forecastRow{
-
 display:flex;
 gap:10px;
 flex-wrap:wrap;
-
+justify-content:center;
 }
 
 .forecastBox{
-
 background:#334155;
-padding:10px;
+padding:10px 14px;
 border-radius:8px;
-
+min-width:70px;
+text-align:center;
 }
 
-
-/* BOTTOM SECTION */
-
 .bottomSection{
-
 display:flex;
 gap:20px;
 flex-wrap:wrap;
-
 }
 
 .mapCard{
-
 background:#1e293b;
 padding:20px;
 border-radius:15px;
 flex:2;
-
 }
 
 #map{
-
 height:350px;
 width:100%;
 border-radius:10px;
-
 }
 
 .tipsCard{
-
 background:#1e293b;
 padding:20px;
 border-radius:15px;
 flex:1;
-
 }
 
 .tipsCard li{
-
 margin-bottom:10px;
-
 }
