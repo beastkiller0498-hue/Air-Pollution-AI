@@ -1,105 +1,188 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <title>AI Air Pollution Dashboard</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 
 body{
-font-family:Arial;
-background:#0f172a;
+background:#0b1220;
 color:white;
+font-family:Arial;
+margin:0;
+padding:20px;
+}
+
+h1{
 text-align:center;
 }
 
-.card{
-background:#1e293b;
-padding:20px;
+.search-box{
+display:flex;
+justify-content:center;
 margin:20px;
+}
+
+input{
+padding:12px;
+width:250px;
 border-radius:10px;
+border:none;
+}
+
+button{
+padding:12px 20px;
+border:none;
+background:#3b82f6;
+color:white;
+border-radius:10px;
+margin-left:10px;
+}
+
+.dashboard{
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:#162033;
+padding:20px;
+border-radius:15px;
+margin:15px 0;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+}
+
+.pollutant{
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+text-align:center;
+}
+
+.aqi-circle{
+width:150px;
+height:150px;
+border-radius:50%;
+background:conic-gradient(red,orange,yellow,green);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+margin:auto;
+}
+
+#map{
+height:300px;
+margin-top:20px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <h1>🌍 AI Air Pollution Dashboard</h1>
 
-<form method="POST">
-
-<input type="text" name="city" placeholder="Enter city or village">
-<button type="submit">Search</button>
-
+<form method="POST" class="search-box">
+<input name="city" placeholder="Enter city or village">
+<button>Search</button>
 </form>
 
 {% if city %}
+
+<div class="dashboard">
 
 <div class="card">
 
 <h2>{{city}}</h2>
 
-<p>AQI: {{aqi}}</p>
-
-<p>PM2.5: {{pm25}}</p>
-<p>PM10: {{pm10}}</p>
-<p>NO2: {{no2}}</p>
-<p>SO2: {{so2}}</p>
-<p>O3: {{o3}}</p>
-
-<p>AI Prediction: {{ai_prediction}}</p>
+<div class="aqi-circle">
+{{prediction}}
+</div>
 
 <p>Health Advice: {{advice}}</p>
+<p>Safe Outdoor Time: {{outdoor}}</p>
+
+</div>
+
+<div class="grid">
+
+<div class="pollutant">PM2.5<br>{{pm25}}</div>
+<div class="pollutant">PM10<br>{{pm10}}</div>
+<div class="pollutant">NO2<br>{{no2}}</div>
+<div class="pollutant">SO2<br>{{so2}}</div>
+<div class="pollutant">O3<br>{{o3}}</div>
 
 </div>
 
 <div class="card">
 
-<h2>12 Hour AQI Forecast</h2>
+<h2>Pollution Graph</h2>
 
-<canvas id="aqiChart"></canvas>
+<canvas id="chart"></canvas>
+
+</div>
 
 <script>
 
-var ctx=document.getElementById('aqiChart');
+new Chart(document.getElementById("chart"),{
 
-new Chart(ctx,{
-type:'line',
+type:"bar",
+
 data:{
-labels:["1","2","3","4","5","6","7","8","9","10","11","12"],
+labels:["PM2.5","PM10","NO2","SO2","O3"],
+
 datasets:[{
-label:"AQI Forecast",
-data:{{forecast}},
-borderWidth:3
+
+data:[{{pm25}},{{pm10}},{{no2}},{{so2}},{{o3}}],
+
+backgroundColor:["#ef4444","#f97316","#3b82f6","#22c55e","#6366f1"]
+
 }]
+
 }
-});
+
+})
 
 </script>
-
-</div>
 
 <div class="card">
 
 <h2>Pollution Map</h2>
 
-<div id="map" style="height:400px"></div>
+<div id="map"></div>
+
+</div>
 
 <script>
 
-var map=L.map('map').setView([20.5937,78.9629],5);
+var map=L.map('map').setView([20,78],4)
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
 </script>
+
+<div class="card">
+
+<h2>Quick Tips</h2>
+
+<ul>
+<li>Plant more trees 🌱</li>
+<li>Use public transport 🚌</li>
+<li>Avoid burning waste ❌</li>
+<li>Wear mask 😷</li>
+</ul>
+
+</div>
 
 </div>
 
