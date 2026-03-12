@@ -1,15 +1,15 @@
-const ctx=document.getElementById("pollutionChart")
+// Chart
+
+const ctx = document.getElementById("pollutionChart").getContext("2d");
 
 new Chart(ctx,{
-
 type:"bar",
 
 data:{
 labels:["PM2.5","PM10","NO2","SO2","O3"],
 
 datasets:[{
-
-label:"Pollution",
+label:"Pollution Levels",
 
 data:[pm25,pm10,no2,so2,o3],
 
@@ -22,12 +22,30 @@ backgroundColor:[
 ]
 
 }]
+},
 
+options:{
+responsive:true,
+
+plugins:{
+legend:{
+display:false
+}
+},
+
+scales:{
+y:{
+beginAtZero:true
+}
+}
 }
 
 })
 
-var map=L.map('map').setView([20,78],4)
+
+// Map
+
+var map = L.map('map').setView([20,78],4)
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 maxZoom:18
