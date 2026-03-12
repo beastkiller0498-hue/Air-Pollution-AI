@@ -128,9 +128,9 @@ text-align:center;
 }
 
 .bottomSection{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
+display:flex;
+flex-direction:column;
+gap:20px;
 }
 
 .mapCard{
@@ -158,3 +158,4 @@ padding-left:18px;
 .tipsCard li{
 margin-bottom:10px;
 }
+
