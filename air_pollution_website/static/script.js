@@ -1,15 +1,34 @@
-navigator.geolocation.getCurrentPosition(function(position){
+const ctx=document.getElementById("pollutionChart")
 
-let lat = position.coords.latitude;
-let lon = position.coords.longitude;
+new Chart(ctx,{
 
-fetch(`/get_aqi?lat=${lat}&lon=${lon}`)
-.then(res => res.json())
-.then(data => {
+type:"bar",
 
-document.getElementById("aqi").innerText = data.aqi
-document.getElementById("status").innerText = data.status
+data:{
+labels:["PM2.5","PM10","NO2","SO2","O3"],
+
+datasets:[{
+
+label:"Pollution",
+
+data:[pm25,pm10,no2,so2,o3],
+
+backgroundColor:[
+"#ef4444",
+"#f97316",
+"#3b82f6",
+"#22c55e",
+"#6366f1"
+]
+
+}]
+
+}
 
 })
 
-})
+var map=L.map('map').setView([20,78],4)
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:18
+}).addTo(map)
