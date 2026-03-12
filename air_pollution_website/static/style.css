@@ -59,7 +59,18 @@ display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
+color:white;
 font-weight:bold;
+}
+
+.aqiCard h3{
+margin:0;
+font-size:18px;
+}
+
+.aqiCard h1{
+margin:0;
+font-size:32px;
 }
 
 .healthCard{
@@ -190,5 +201,6 @@ border-radius:12px;
 margin-top:10px;
 font-size:14px;
 }
+
 
 
