@@ -153,15 +153,15 @@
 
 <script>
 
-const pm25={{pm25}}
-const pm10={{pm10}}
-const no2={{no2}}
-const so2={{so2}}
-const o3={{o3}}
+const pm25={{ pm25 | default(0) }}
+const pm10={{ pm10 | default(0) }}
+const no2={{ no2 | default(0) }}
+const so2={{ so2 | default(0) }}
+const o3={{ o3 | default(0) }}
 
-const city="{{city}}"
-const aqi="{{aqi}}"
-const status="{{status}}"
+const city="{{ city | default('Unknown') }}"
+const aqi={{ aqi | default(0) }}
+const status="{{ status | default('Good') }}"
 
 </script>
 
@@ -169,4 +169,5 @@ const status="{{status}}"
 
 </body>
 </html>
+
 
