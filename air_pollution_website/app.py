@@ -88,9 +88,10 @@ if model is None:
     prediction = 0
 else:
     prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
-        # Advice
-        advice = health_advice(prediction)
-        outdoor = safe_time(prediction)
+
+# Advice
+advice = health_advice(prediction)
+outdoor = safe_time(prediction)
 
         # Status
         if prediction <= 50:
