@@ -82,22 +82,22 @@ def home():
         o3 = comp["o3"]
 
         # ML prediction
-        if model is None:
-            prediction = 0
-        else:
-            prediction = float(model.predict([[pm25, pm10, no2, so2, o3]])[0])
+if model is None:
+    prediction = 0
+else:
+    prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
 
-        # Advice
-        advice = health_advice(prediction)
-        outdoor = safe_time(prediction)
+# Advice (OUTSIDE if-else)
+advice = health_advice(prediction)
+outdoor = safe_time(prediction)
 
-        # Status
-        if prediction <= 50:
-            status = "Good"
-        elif prediction <= 100:
-            status = "Moderate"
-        else:
-            status = "Poor"
+# Status
+if prediction <= 50:
+    status = "Good"
+elif prediction <= 100:
+    status = "Moderate"
+else:
+    status = "Poor"
 
         # Forecast (dummy values)
         forecast = []
