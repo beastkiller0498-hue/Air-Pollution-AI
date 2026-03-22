@@ -6,13 +6,11 @@ import os
 app = Flask(__name__)
 
 # ---------------------------
-# LOAD ML MODEL
+# LOAD ML MODEL (SAFE)
 # ---------------------------
 model = None
-model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
-
 try:
-    with open(model_path, "rb") as f:
+    with open("model.pkl", "rb") as f:
         model = pickle.load(f)
     print("Model loaded")
 except:
@@ -39,7 +37,7 @@ def health_advice(aqi):
         return "Very dangerous 🚫 Stay indoors"
 
 # ---------------------------
-# OUTDOOR SUGGESTION
+# OUTDOOR TIME
 # ---------------------------
 def safe_time(aqi):
     if aqi <= 50:
@@ -56,6 +54,7 @@ def safe_time(aqi):
 # ---------------------------
 @app.route("/", methods=["GET", "POST"])
 def home():
+
     city = ""
     forecast = []
 
@@ -87,17 +86,17 @@ def home():
 
             comp = data["list"][0]["components"]
 
-            pm25 = comp["pm2_5"]
-            pm10 = comp["pm10"]
-            no = comp["no"]
-            no2 = comp["no2"]
-            so2 = comp["so2"]
+            pm25 = comp.get("pm2_5", 0)
+            pm10 = comp.get("pm10", 0)
+            no = comp.get("no", 0)
+            no2 = comp.get("no2", 0)
+            so2 = comp.get("so2", 0)
 
             # ---------------------------
-            # ML PREDICTION (REAL)
+            # ML PREDICTION (SAFE)
             # ---------------------------
             try:
-                if model is not None:
+                if model:
                     prediction = model.predict([[pm25, pm10, no, no2, so2]])[0]
                 else:
                     prediction = pm25 * 0.6 + pm10 * 0.2 + no2 * 0.1 + so2 * 0.1
@@ -107,14 +106,11 @@ def home():
             prediction = round(prediction, 2)
 
             # ---------------------------
-            # ADVICE
+            # STATUS + ADVICE
             # ---------------------------
             advice = health_advice(prediction)
             outdoor = safe_time(prediction)
 
-            # ---------------------------
-            # STATUS
-            # ---------------------------
             if prediction <= 50:
                 status = "Good"
             elif prediction <= 100:
@@ -125,25 +121,31 @@ def home():
                 status = "Severe"
 
             # ---------------------------
-            # REAL FORECAST USING DATA 🔥
+            # SAFE FORECAST (REAL DATA)
             # ---------------------------
-            f_url = f"https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
-            f_data = requests.get(f_url).json()
-
             forecast = []
 
-            for item in f_data["list"][:12]:
-                comp = item["components"]
+            try:
+                f_url = f"https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
+                f_data = requests.get(f_url).json()
 
-                pm25_f = comp["pm2_5"]
-                pm10_f = comp["pm10"]
-                no2_f = comp["no2"]
-                so2_f = comp["so2"]
+                if "list" in f_data:
+                    for item in f_data["list"][:12]:
+                        comp = item["components"]
 
-                # REAL AQI calculation
-                aqi_val = pm25_f * 0.6 + pm10_f * 0.2 + no2_f * 0.1 + so2_f * 0.1
+                        pm25_f = comp.get("pm2_5", 0)
+                        pm10_f = comp.get("pm10", 0)
+                        no2_f = comp.get("no2", 0)
+                        so2_f = comp.get("so2", 0)
 
-                forecast.append(round(aqi_val, 2))
+                        aqi_val = pm25_f * 0.6 + pm10_f * 0.2 + no2_f * 0.1 + so2_f * 0.1
+
+                        forecast.append(round(aqi_val, 2))
+                else:
+                    forecast = [prediction] * 12
+
+            except:
+                forecast = [prediction] * 12
 
         except Exception as e:
             print("ERROR:", e)
