@@ -5,7 +5,9 @@ import os
 
 app = Flask(__name__)
 
-# Load model
+# ---------------------------
+# LOAD ML MODEL
+# ---------------------------
 model = None
 model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
 
@@ -16,8 +18,14 @@ try:
 except:
     print("Model not found")
 
+# ---------------------------
+# API KEY
+# ---------------------------
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
+# ---------------------------
+# FUNCTIONS
+# ---------------------------
 def health_advice(aqi):
     if aqi <= 50:
         return "Air quality is good"
@@ -38,10 +46,14 @@ def safe_time(aqi):
     else:
         return "Avoid outdoor activity"
 
+# ---------------------------
+# MAIN ROUTE
+# ---------------------------
 @app.route("/", methods=["GET", "POST"])
 def home():
     city = ""
     forecast = []
+
     pm25 = pm10 = no2 = so2 = o3 = 0
     prediction = 0
     advice = ""
@@ -52,9 +64,16 @@ def home():
         try:
             city = request.form["city"]
 
-            # GEO API
+            # ---------------------------
+            # GEO LOCATION API
+            # ---------------------------
             geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
-            geo = requests.get(geo_url, timeout=10).json()
+            geo_response = requests.get(geo_url, timeout=10)
+
+            if geo_response.status_code != 200:
+                return "❌ Location API failed"
+
+            geo = geo_response.json()
 
             if len(geo) == 0:
                 return "❌ City not found"
@@ -62,12 +81,19 @@ def home():
             lat = geo[0]["lat"]
             lon = geo[0]["lon"]
 
+            # ---------------------------
             # POLLUTION API
+            # ---------------------------
             pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
-            data = requests.get(pollution_url, timeout=10).json()
+            response = requests.get(pollution_url, timeout=10)
 
-            if "list" not in data:
-                return "❌ API error"
+            if response.status_code != 200:
+                return "❌ API failed"
+
+            data = response.json()
+
+            if "list" not in data or len(data["list"]) == 0:
+                return "❌ No pollution data"
 
             comp = data["list"][0]["components"]
 
@@ -77,17 +103,26 @@ def home():
             so2 = comp["so2"]
             o3 = comp["o3"]
 
-            # ML prediction
-            if model is not None:
-                prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
-            else:
+            # ---------------------------
+            # ML PREDICTION
+            # ---------------------------
+            try:
+                if model is not None:
+                    prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+                else:
+                    prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
+            except:
                 prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
 
-            # Advice
+            # ---------------------------
+            # ADVICE
+            # ---------------------------
             advice = health_advice(prediction)
             outdoor = safe_time(prediction)
 
-            # Status
+            # ---------------------------
+            # STATUS
+            # ---------------------------
             if prediction <= 50:
                 status = "Good"
             elif prediction <= 100:
@@ -95,14 +130,16 @@ def home():
             else:
                 status = "Poor"
 
-            # Forecast
+            # ---------------------------
+            # FORECAST
+            # ---------------------------
             forecast = []
             for i in range(12):
                 forecast.append(round(prediction, 2))
 
         except Exception as e:
             print("ERROR:", e)
-            return "❌ Something went wrong (check logs)"
+            return "❌ Something went wrong"
 
     return render_template(
         "index.html",
@@ -119,6 +156,9 @@ def home():
         status=status
     )
 
+# ---------------------------
+# RUN SERVER
+# ---------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
