@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 # Load ML model
 model = None
-
 model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
 
 with open(model_path, "rb") as f:
@@ -15,11 +14,11 @@ with open(model_path, "rb") as f:
 
 print("Model loaded successfully")
 
-# Your API key (replace with your real key)
+# API key
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
 
-# Health advice function
+# Health advice
 def health_advice(aqi):
     if aqi <= 50:
         return "Air quality is good"
@@ -45,7 +44,6 @@ def safe_time(aqi):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # Default values
     city = ""
     forecast = []
 
@@ -83,15 +81,15 @@ def home():
         so2 = comp["so2"]
         o3 = comp["o3"]
 
-    # ML prediction
-if model is None:
-    prediction = 0
-else:
-    prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+        # ML prediction
+        if model is None:
+            prediction = 0
+        else:
+            prediction = float(model.predict([[pm25, pm10, no2, so2, o3]])[0])
 
-# Advice
-advice = health_advice(prediction)
-outdoor = safe_time(prediction)
+        # Advice
+        advice = health_advice(prediction)
+        outdoor = safe_time(prediction)
 
         # Status
         if prediction <= 50:
@@ -101,7 +99,7 @@ outdoor = safe_time(prediction)
         else:
             status = "Poor"
 
-        # Forecast (dummy 12 values)
+        # Forecast (dummy values)
         forecast = []
         for i in range(12):
             forecast.append(round(prediction, 2))
