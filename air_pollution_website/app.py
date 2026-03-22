@@ -75,16 +75,19 @@ def home():
         outdoor = safe_time(prediction)
 
     return render_template(
-        "index.html",
-        pm25=pm25,
-        pm10=pm10,
-        no2=no2,
-        so2=so2,
-        o3=o3,
-        aqi=round(prediction, 2),
-        advice=advice,
-        outdoor=outdoor
-    )
+    "index.html",
+    city=city,
+    pm25=pm25,
+    pm10=pm10,
+    no2=no2,
+    so2=so2,
+    o3=o3,
+    aqi=round(prediction, 2),
+    advice=advice,
+    outdoor=outdoor,
+    forecast=forecast,
+    status="Good"
+)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
