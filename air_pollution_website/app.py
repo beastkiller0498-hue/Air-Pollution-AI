@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Load ML model
-model = pickle.load(open("model.pkl", "rb"))
+model = None
 
 # Your API key (replace with your real key)
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
@@ -77,8 +77,7 @@ def home():
         o3 = comp["o3"]
 
         # ML prediction
-        prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
-
+        prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
         # Advice
         advice = health_advice(prediction)
         outdoor = safe_time(prediction)
