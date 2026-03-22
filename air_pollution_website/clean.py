@@ -6,7 +6,7 @@ df = pd.read_csv("final_dataset.csv")
 df.columns = df.columns.str.lower()
 
 # select only needed columns
-df = df[['pm2.5 (ug/m3)','pm10 (ug/m3)','no (ug/m3)','no2 (ug/m3)','so2 (ug/m3)']]
+df = df[['PM2.5', 'PM10', 'NO', 'NO2', 'SO2']]
 
 # rename columns
 df.columns = ['pm25','pm10','no','no2','so2']
