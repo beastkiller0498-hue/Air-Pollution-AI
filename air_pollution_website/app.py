@@ -25,7 +25,7 @@ except:
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
 # ---------------------------
-# HEALTH ADVICE (IMPROVED)
+# HEALTH ADVICE
 # ---------------------------
 def health_advice(aqi):
     if aqi <= 30:
@@ -118,8 +118,7 @@ def home():
             except:
                 prediction = (pm25 + pm10 + no + no2 + so2) / 5
 
-            # 🔥 Make output more dynamic
-            prediction = int(prediction + random.uniform(-5, 5))
+            prediction = round(prediction, 2)
 
             # ---------------------------
             # ADVICE
@@ -138,12 +137,21 @@ def home():
                 status = "Poor"
 
             # ---------------------------
-            # FORECAST
+            # REAL FORECAST API
             # ---------------------------
             forecast = []
-            for i in range(12):
-                val = prediction + random.uniform(-5, 5)
-                forecast.append(round(val, 2))
+
+            f_url = f"https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
+            f_response = requests.get(f_url, timeout=10)
+
+            if f_response.status_code == 200:
+                f_data = f_response.json()
+
+                if "list" in f_data:
+                    for item in f_data["list"][:12]:
+                        forecast.append(item["main"]["aqi"])
+            else:
+                forecast = ["No data"]
 
         except Exception as e:
             print("ERROR:", e)
@@ -157,7 +165,7 @@ def home():
         no=no,
         no2=no2,
         so2=so2,
-        aqi=round(prediction, 2),
+        aqi=prediction,
         advice=advice,
         outdoor=outdoor,
         forecast=forecast,
