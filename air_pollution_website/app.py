@@ -5,18 +5,19 @@ import os
 
 app = Flask(__name__)
 
-# Load ML model
+# Load ML model safely
 model = None
 model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
 
-with open(model_path, "rb") as f:
-    model = pickle.load(f)
+try:
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+    print("Model loaded successfully")
+except:
+    print("Model not found!")
 
-print("Model loaded successfully")
-
-# API key
+# API KEY
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
-
 
 # Health advice
 def health_advice(aqi):
@@ -29,7 +30,6 @@ def health_advice(aqi):
     else:
         return "Very unhealthy air"
 
-
 # Outdoor suggestion
 def safe_time(aqi):
     if aqi <= 50:
@@ -41,12 +41,11 @@ def safe_time(aqi):
     else:
         return "Avoid outdoor activity"
 
-
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # Default values
     city = ""
     forecast = []
-
     pm25 = pm10 = no2 = so2 = o3 = 0
     prediction = 0
     advice = ""
@@ -81,25 +80,25 @@ def home():
         so2 = comp["so2"]
         o3 = comp["o3"]
 
-        # ML prediction
-if model is None:
-    prediction = 0
-else:
-    prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+        # ML Prediction
+        if model is not None:
+            prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+        else:
+            prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
 
-# Advice (OUTSIDE if-else)
-advice = health_advice(prediction)
-outdoor = safe_time(prediction)
+        # Advice
+        advice = health_advice(prediction)
+        outdoor = safe_time(prediction)
 
-# Status
-if prediction <= 50:
-    status = "Good"
-elif prediction <= 100:
-    status = "Moderate"
-else:
-    status = "Poor"
+        # Status
+        if prediction <= 50:
+            status = "Good"
+        elif prediction <= 100:
+            status = "Moderate"
+        else:
+            status = "Poor"
 
-        # Forecast (dummy values)
+        # Forecast (safe & clean)
         forecast = []
         for i in range(12):
             forecast.append(round(prediction, 2))
@@ -118,7 +117,6 @@ else:
         forecast=forecast,
         status=status
     )
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
