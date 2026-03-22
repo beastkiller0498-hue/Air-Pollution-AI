@@ -83,8 +83,11 @@ def home():
         so2 = comp["so2"]
         o3 = comp["o3"]
 
-        # ML prediction
-        prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
+     # ML prediction
+if model is None:
+    return "❌ ML model not loaded"
+
+prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
         # Advice
         advice = health_advice(prediction)
         outdoor = safe_time(prediction)
