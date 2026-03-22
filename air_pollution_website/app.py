@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request
 import requests
+import pickle
 
 app = Flask(__name__)
 
 # Your OpenWeather API key
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
+model = pickle.load(open("model.pkl", "rb"))
 
 
 # Health advice function
@@ -64,7 +66,7 @@ def home():
         so2 = comp["so2"]
         o3 = comp["o3"]
 
-        prediction = data["list"][0]["main"]["aqi"]
+        prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
 
         advice = health_advice(prediction)
         outdoor = safe_time(prediction)
