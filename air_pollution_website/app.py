@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # ---------------------------
-# LOAD ML MODEL (SAFE)
+# LOAD ML MODEL
 # ---------------------------
 model = None
 try:
@@ -37,7 +37,7 @@ def health_advice(aqi):
         return "Very dangerous 🚫 Stay indoors"
 
 # ---------------------------
-# OUTDOOR TIME
+# OUTDOOR SUGGESTION
 # ---------------------------
 def safe_time(aqi):
     if aqi <= 50:
@@ -68,7 +68,9 @@ def home():
         try:
             city = request.form["city"]
 
-            # GEO API
+            # ---------------------------
+            # GET LOCATION
+            # ---------------------------
             geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
             geo = requests.get(geo_url).json()
 
@@ -79,7 +81,7 @@ def home():
             lon = geo[0]["lon"]
 
             # ---------------------------
-            # CURRENT POLLUTION DATA
+            # CURRENT POLLUTION
             # ---------------------------
             url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
             data = requests.get(url).json()
@@ -93,7 +95,7 @@ def home():
             so2 = comp.get("so2", 0)
 
             # ---------------------------
-            # ML PREDICTION (SAFE)
+            # REAL AQI CALCULATION / ML
             # ---------------------------
             try:
                 if model:
@@ -121,7 +123,7 @@ def home():
                 status = "Severe"
 
             # ---------------------------
-            # SAFE FORECAST (REAL DATA)
+            # REAL FORECAST (NO FAKE)
             # ---------------------------
             forecast = []
 
@@ -131,6 +133,7 @@ def home():
 
                 if "list" in f_data:
                     for item in f_data["list"][:12]:
+
                         comp = item["components"]
 
                         pm25_f = comp.get("pm2_5", 0)
@@ -138,9 +141,11 @@ def home():
                         no2_f = comp.get("no2", 0)
                         so2_f = comp.get("so2", 0)
 
+                        # REAL AQI CALCULATION
                         aqi_val = pm25_f * 0.6 + pm10_f * 0.2 + no2_f * 0.1 + so2_f * 0.1
 
                         forecast.append(round(aqi_val, 2))
+
                 else:
                     forecast = [prediction] * 12
 
