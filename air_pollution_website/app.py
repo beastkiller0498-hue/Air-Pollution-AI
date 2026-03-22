@@ -26,9 +26,9 @@ API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 # ---------------------------
 def health_advice(aqi):
     if aqi <= 50:
-        return "Excellent air quality 🌿"
+        return "Good air quality 🌿"
     elif aqi <= 100:
-        return "Good air quality 🙂"
+        return "Normal air quality 🙂"
     elif aqi <= 150:
         return "Moderate pollution 😐"
     elif aqi <= 200:
