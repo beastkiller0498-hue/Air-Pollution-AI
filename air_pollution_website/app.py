@@ -5,21 +5,19 @@ import os
 
 app = Flask(__name__)
 
-# Load ML model safely
+# Load model
 model = None
 model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
 
 try:
     with open(model_path, "rb") as f:
         model = pickle.load(f)
-    print("Model loaded successfully")
+    print("Model loaded")
 except:
-    print("Model not found!")
+    print("Model not found")
 
-# API KEY
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
-# Health advice
 def health_advice(aqi):
     if aqi <= 50:
         return "Air quality is good"
@@ -30,7 +28,6 @@ def health_advice(aqi):
     else:
         return "Very unhealthy air"
 
-# Outdoor suggestion
 def safe_time(aqi):
     if aqi <= 50:
         return "Anytime"
@@ -43,7 +40,6 @@ def safe_time(aqi):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # Default values
     city = ""
     forecast = []
     pm25 = pm10 = no2 = so2 = o3 = 0
@@ -53,55 +49,60 @@ def home():
     status = "Good"
 
     if request.method == "POST":
-        city = request.form["city"]
+        try:
+            city = request.form["city"]
 
-        # Get coordinates
-        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
-        geo = requests.get(geo_url).json()
+            # GEO API
+            geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
+            geo = requests.get(geo_url, timeout=10).json()
 
-        if len(geo) == 0:
-            return "❌ City not found"
+            if len(geo) == 0:
+                return "❌ City not found"
 
-        lat = geo[0]["lat"]
-        lon = geo[0]["lon"]
+            lat = geo[0]["lat"]
+            lon = geo[0]["lon"]
 
-        # Get pollution data
-        pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
-        data = requests.get(pollution_url).json()
+            # POLLUTION API
+            pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+            data = requests.get(pollution_url, timeout=10).json()
 
-        if "list" not in data:
-            return "❌ API error"
+            if "list" not in data:
+                return "❌ API error"
 
-        comp = data["list"][0]["components"]
+            comp = data["list"][0]["components"]
 
-        pm25 = comp["pm2_5"]
-        pm10 = comp["pm10"]
-        no2 = comp["no2"]
-        so2 = comp["so2"]
-        o3 = comp["o3"]
+            pm25 = comp["pm2_5"]
+            pm10 = comp["pm10"]
+            no2 = comp["no2"]
+            so2 = comp["so2"]
+            o3 = comp["o3"]
 
-        # ML Prediction
-        if model is not None:
-            prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
-        else:
-            prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
+            # ML prediction
+            if model is not None:
+                prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+            else:
+                prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
 
-        # Advice
-        advice = health_advice(prediction)
-        outdoor = safe_time(prediction)
+            # Advice
+            advice = health_advice(prediction)
+            outdoor = safe_time(prediction)
 
-        # Status
-        if prediction <= 50:
-            status = "Good"
-        elif prediction <= 100:
-            status = "Moderate"
-        else:
-            status = "Poor"
+            # Status
+            if prediction <= 50:
+                status = "Good"
+            elif prediction <= 100:
+                status = "Moderate"
+            else:
+                status = "Poor"
 
-        # Forecast (safe & clean)
-        forecast = []
-        for i in range(12):
-            forecast.append(round(prediction, 2))
+            # Forecast
+            forecast = []
+            for i in range(12):
+                forecast.append(round(prediction, 2))
+
+        except Exception as e:
+            print("ERROR:", e)
+            return "❌ Something went wrong (check logs)"
 
     return render_template(
         "index.html",
