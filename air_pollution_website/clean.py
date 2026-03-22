@@ -1,19 +1,29 @@
 import pandas as pd
 
+# Load combined dataset
 df = pd.read_csv("final_dataset.csv")
 
-# lower case
-df.columns = df.columns.str.lower()
+# Remove extra spaces from column names
+df.columns = df.columns.str.strip()
 
-# select only needed columns
+print("Columns in dataset:", df.columns.tolist())
+
+# Rename columns to simple format (if needed)
+df = df.rename(columns={
+    'PM2.5 (ug/m3)': 'PM2.5',
+    'PM10 (ug/m3)': 'PM10',
+    'NO (ug/m3)': 'NO',
+    'NO2 (ug/m3)': 'NO2',
+    'SO2 (ug/m3)': 'SO2'
+})
+
+# Keep only required columns
 df = df[['PM2.5', 'PM10', 'NO', 'NO2', 'SO2']]
 
-# rename columns
-df.columns = ['pm25','pm10','no','no2','so2']
-
-# remove missing values
+# Remove missing values
 df = df.dropna()
 
-df.to_csv("clean_data.csv", index=False)
+# Save cleaned dataset
+df.to_csv("cleaned_dataset.csv", index=False)
 
-print("Clean data ready ✅")
+print("Cleaned dataset created successfully!")
