@@ -7,8 +7,6 @@ app = Flask(__name__)
 
 # Load ML model
 model = None
-import pickle
-import os
 
 model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
 
