@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 import requests
 import pickle
 import os
-import random
 
 app = Flask(__name__)
 
@@ -28,18 +27,16 @@ API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 # HEALTH ADVICE
 # ---------------------------
 def health_advice(aqi):
-    if aqi <= 30:
+    if aqi <= 50:
         return "Excellent air quality 🌿"
-    elif aqi <= 60:
-        return "Good air quality 🙂"
     elif aqi <= 100:
-        return "Moderate air quality 😐"
+        return "Good air quality 🙂"
     elif aqi <= 150:
-        return "Unhealthy for sensitive groups ⚠️"
+        return "Moderate pollution 😐"
     elif aqi <= 200:
         return "Unhealthy 😷"
     else:
-        return "Very dangerous 🚫"
+        return "Very dangerous 🚫 Stay indoors"
 
 # ---------------------------
 # OUTDOOR SUGGESTION
@@ -74,30 +71,19 @@ def home():
 
             # GEO API
             geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
-            geo_response = requests.get(geo_url, timeout=10)
-
-            if geo_response.status_code != 200:
-                return "❌ Location API failed"
-
-            geo = geo_response.json()
+            geo = requests.get(geo_url).json()
 
             if len(geo) == 0:
-                return "❌ City not found"
+                return "City not found"
 
             lat = geo[0]["lat"]
             lon = geo[0]["lon"]
 
-            # POLLUTION API
-            pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
-            response = requests.get(pollution_url, timeout=10)
-
-            if response.status_code != 200:
-                return "❌ API failed"
-
-            data = response.json()
-
-            if "list" not in data or len(data["list"]) == 0:
-                return "❌ No pollution data"
+            # ---------------------------
+            # CURRENT POLLUTION DATA
+            # ---------------------------
+            url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+            data = requests.get(url).json()
 
             comp = data["list"][0]["components"]
 
@@ -108,15 +94,15 @@ def home():
             so2 = comp["so2"]
 
             # ---------------------------
-            # ML PREDICTION
+            # ML PREDICTION (REAL)
             # ---------------------------
             try:
                 if model is not None:
                     prediction = model.predict([[pm25, pm10, no, no2, so2]])[0]
                 else:
-                    prediction = (pm25 + pm10 + no + no2 + so2) / 5
+                    prediction = pm25 * 0.6 + pm10 * 0.2 + no2 * 0.1 + so2 * 0.1
             except:
-                prediction = (pm25 + pm10 + no + no2 + so2) / 5
+                prediction = pm25 * 0.6 + pm10 * 0.2 + no2 * 0.1 + so2 * 0.1
 
             prediction = round(prediction, 2)
 
@@ -133,29 +119,35 @@ def home():
                 status = "Good"
             elif prediction <= 100:
                 status = "Moderate"
-            else:
+            elif prediction <= 150:
                 status = "Poor"
+            else:
+                status = "Severe"
 
             # ---------------------------
-            # REAL FORECAST API
+            # REAL FORECAST USING DATA 🔥
             # ---------------------------
+            f_url = f"https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
+            f_data = requests.get(f_url).json()
+
             forecast = []
 
-            f_url = f"https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat={lat}&lon={lon}&appid={API_KEY}"
-            f_response = requests.get(f_url, timeout=10)
+            for item in f_data["list"][:12]:
+                comp = item["components"]
 
-            if f_response.status_code == 200:
-                f_data = f_response.json()
+                pm25_f = comp["pm2_5"]
+                pm10_f = comp["pm10"]
+                no2_f = comp["no2"]
+                so2_f = comp["so2"]
 
-                if "list" in f_data:
-                    for item in f_data["list"][:12]:
-                        forecast.append(item["main"]["aqi"])
-            else:
-                forecast = ["No data"]
+                # REAL AQI calculation
+                aqi_val = pm25_f * 0.6 + pm10_f * 0.2 + no2_f * 0.1 + so2_f * 0.1
+
+                forecast.append(round(aqi_val, 2))
 
         except Exception as e:
             print("ERROR:", e)
-            return "❌ Something went wrong"
+            return "Something went wrong"
 
     return render_template(
         "index.html",
