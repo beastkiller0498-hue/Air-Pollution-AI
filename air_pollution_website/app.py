@@ -8,37 +8,45 @@ app = Flask(__name__)
 # Load ML model
 model = pickle.load(open("model.pkl", "rb"))
 
-# Your API key
+# Your API key (replace with your real key)
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
-# Health advice
-def health_advice(aqi):
-    if aqi <= 2:
-        return "Air quality is good"
-    elif aqi <= 3:
-        return "Moderate air quality"
-    elif aqi <= 4:
-        return "Poor air. Wear mask"
-    else:
-        return "Very poor air. Stay indoors"
 
-# Safe time suggestion
+# Health advice function
+def health_advice(aqi):
+    if aqi <= 50:
+        return "Air quality is good"
+    elif aqi <= 100:
+        return "Moderate air quality"
+    elif aqi <= 150:
+        return "Unhealthy for sensitive groups"
+    else:
+        return "Very unhealthy air"
+
+
+# Outdoor suggestion
 def safe_time(aqi):
-    if aqi <= 2:
+    if aqi <= 50:
         return "Anytime"
-    elif aqi <= 3:
+    elif aqi <= 100:
         return "Morning recommended"
-    elif aqi <= 4:
+    elif aqi <= 150:
         return "6AM - 8AM"
     else:
         return "Avoid outdoor activity"
 
+
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # Default values
+    city = ""
+    forecast = []
+
     pm25 = pm10 = no2 = so2 = o3 = 0
     prediction = 0
     advice = ""
     outdoor = ""
+    status = "Good"
 
     if request.method == "POST":
         city = request.form["city"]
@@ -68,26 +76,41 @@ def home():
         so2 = comp["so2"]
         o3 = comp["o3"]
 
-        # ML Prediction
+        # ML prediction
         prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
 
+        # Advice
         advice = health_advice(prediction)
         outdoor = safe_time(prediction)
 
+        # Status
+        if prediction <= 50:
+            status = "Good"
+        elif prediction <= 100:
+            status = "Moderate"
+        else:
+            status = "Poor"
+
+        # Forecast (dummy 12 values)
+        forecast = []
+        for i in range(12):
+            forecast.append(round(prediction, 2))
+
     return render_template(
-    "index.html",
-    city=city,
-    pm25=pm25,
-    pm10=pm10,
-    no2=no2,
-    so2=so2,
-    o3=o3,
-    aqi=round(prediction, 2),
-    advice=advice,
-    outdoor=outdoor,
-    forecast=forecast,
-    status="Good"
-)
+        "index.html",
+        city=city,
+        pm25=pm25,
+        pm10=pm10,
+        no2=no2,
+        so2=so2,
+        o3=o3,
+        aqi=round(prediction, 2),
+        advice=advice,
+        outdoor=outdoor,
+        forecast=forecast,
+        status=status
+    )
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
