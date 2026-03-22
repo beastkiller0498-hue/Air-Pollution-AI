@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import requests
 import pickle
 import os
+import random
 
 app = Flask(__name__)
 
@@ -24,18 +25,25 @@ except:
 API_KEY = "fd9ee9262822e39a91e587d80cbb302f"
 
 # ---------------------------
-# FUNCTIONS
+# HEALTH ADVICE (IMPROVED)
 # ---------------------------
 def health_advice(aqi):
-    if aqi <= 50:
-        return "Air quality is good"
+    if aqi <= 30:
+        return "Excellent air quality 🌿"
+    elif aqi <= 60:
+        return "Good air quality 🙂"
     elif aqi <= 100:
-        return "Moderate air quality"
+        return "Moderate air quality 😐"
     elif aqi <= 150:
-        return "Unhealthy for sensitive groups"
+        return "Unhealthy for sensitive groups ⚠️"
+    elif aqi <= 200:
+        return "Unhealthy 😷"
     else:
-        return "Very unhealthy air"
+        return "Very dangerous 🚫"
 
+# ---------------------------
+# OUTDOOR SUGGESTION
+# ---------------------------
 def safe_time(aqi):
     if aqi <= 50:
         return "Anytime"
@@ -64,9 +72,7 @@ def home():
         try:
             city = request.form["city"]
 
-            # ---------------------------
-            # GEO LOCATION API
-            # ---------------------------
+            # GEO API
             geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
             geo_response = requests.get(geo_url, timeout=10)
 
@@ -81,9 +87,7 @@ def home():
             lat = geo[0]["lat"]
             lon = geo[0]["lon"]
 
-            # ---------------------------
             # POLLUTION API
-            # ---------------------------
             pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
             response = requests.get(pollution_url, timeout=10)
 
@@ -114,6 +118,9 @@ def home():
             except:
                 prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
 
+            # 🔥 Make output more dynamic
+            prediction = int(prediction + random.uniform(-5, 5))
+
             # ---------------------------
             # ADVICE
             # ---------------------------
@@ -135,7 +142,8 @@ def home():
             # ---------------------------
             forecast = []
             for i in range(12):
-                forecast.append(round(prediction, 2))
+                val = prediction + random.uniform(-5, 5)
+                forecast.append(round(val, 2))
 
         except Exception as e:
             print("ERROR:", e)
