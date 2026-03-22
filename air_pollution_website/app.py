@@ -62,7 +62,7 @@ def home():
     city = ""
     forecast = []
 
-    pm25 = pm10 = no2 = so2 = o3 = 0
+    pm25 = pm10 = no = no2 = so2 = 0
     prediction = 0
     advice = ""
     outdoor = ""
@@ -103,20 +103,20 @@ def home():
 
             pm25 = comp["pm2_5"]
             pm10 = comp["pm10"]
+            no = comp["no"]
             no2 = comp["no2"]
             so2 = comp["so2"]
-            o3 = comp["o3"]
 
             # ---------------------------
             # ML PREDICTION
             # ---------------------------
             try:
                 if model is not None:
-                    prediction = model.predict([[pm25, pm10, no2, so2, o3]])[0]
+                    prediction = model.predict([[pm25, pm10, no, no2, so2]])[0]
                 else:
-                    prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
+                    prediction = (pm25 + pm10 + no + no2 + so2) / 5
             except:
-                prediction = (pm25 + pm10 + no2 + so2 + o3) / 5
+                prediction = (pm25 + pm10 + no + no2 + so2) / 5
 
             # 🔥 Make output more dynamic
             prediction = int(prediction + random.uniform(-5, 5))
@@ -154,9 +154,9 @@ def home():
         city=city,
         pm25=pm25,
         pm10=pm10,
+        no=no,
         no2=no2,
         so2=so2,
-        o3=o3,
         aqi=round(prediction, 2),
         advice=advice,
         outdoor=outdoor,
