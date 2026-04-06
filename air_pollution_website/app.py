@@ -28,9 +28,9 @@ def health_advice(aqi):
     if aqi <= 50:
         return "Good air quality 🌿"
     elif aqi <= 100:
-        return "Normal air quality 🙂"
+        return "Moderate air quality 🙂"
     elif aqi <= 150:
-        return "Moderate pollution 😐"
+        return "Unhealthy for sensitive groups 😐"
     elif aqi <= 200:
         return "Unhealthy 😷"
     else:
@@ -68,23 +68,22 @@ def home():
         try:
             city = request.form["city"]
 
-            # ---------------------------
-            # GET LOCATION
-            # ---------------------------
+            # GEO LOCATION
             geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
             geo = requests.get(geo_url).json()
 
-            if len(geo) == 0:
-                return "City not found"
+            if not geo:
+                return "❌ City not found"
 
             lat = geo[0]["lat"]
             lon = geo[0]["lon"]
 
-            # ---------------------------
-            # CURRENT POLLUTION
-            # ---------------------------
+            # CURRENT AIR DATA
             url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
             data = requests.get(url).json()
+
+            if "list" not in data:
+                return "❌ API error"
 
             comp = data["list"][0]["components"]
 
@@ -95,7 +94,7 @@ def home():
             so2 = comp.get("so2", 0)
 
             # ---------------------------
-            # REAL AQI CALCULATION / ML
+            # ML PREDICTION (REAL)
             # ---------------------------
             try:
                 if model:
@@ -107,9 +106,7 @@ def home():
 
             prediction = round(prediction, 2)
 
-            # ---------------------------
             # STATUS + ADVICE
-            # ---------------------------
             advice = health_advice(prediction)
             outdoor = safe_time(prediction)
 
@@ -123,7 +120,7 @@ def home():
                 status = "Severe"
 
             # ---------------------------
-            # REAL FORECAST (NO FAKE)
+            # REAL FORECAST (FIXED)
             # ---------------------------
             forecast = []
 
@@ -134,18 +131,17 @@ def home():
                 if "list" in f_data:
                     for item in f_data["list"][:12]:
 
-                        comp = item["components"]
+                        comp_f = item["components"]
 
-                        pm25_f = comp.get("pm2_5", 0)
-                        pm10_f = comp.get("pm10", 0)
-                        no2_f = comp.get("no2", 0)
-                        so2_f = comp.get("so2", 0)
+                        pm25_f = comp_f.get("pm2_5", 0)
+                        pm10_f = comp_f.get("pm10", 0)
+                        no2_f = comp_f.get("no2", 0)
+                        so2_f = comp_f.get("so2", 0)
 
                         # REAL AQI CALCULATION
                         aqi_val = pm25_f * 0.6 + pm10_f * 0.2 + no2_f * 0.1 + so2_f * 0.1
 
                         forecast.append(round(aqi_val, 2))
-
                 else:
                     forecast = [prediction] * 12
 
@@ -154,7 +150,7 @@ def home():
 
         except Exception as e:
             print("ERROR:", e)
-            return "Something went wrong"
+            return "❌ Something went wrong"
 
     return render_template(
         "index.html",
